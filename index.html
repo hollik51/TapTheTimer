@@ -392,7 +392,10 @@
             const tabs = document.querySelectorAll('.nav-tabs .tab');
             tabs.forEach(tab => {
                 tab.classList.remove('active');
-                if (tab.textContent.toLowerCase().includes(sectionId.replace('Section', '').toLowerCase())) {
+                // Изменяем условие для корректной работы с "ADD A NEW BOT"
+                const tabText = tab.textContent.toLowerCase().replace(/\s+/g, '');
+                const sectionText = sectionId.replace('Section', '').toLowerCase().replace(/\s+/g, '');
+                if (tabText.includes(sectionText)) {
                     tab.classList.add('active');
                 }
             });
@@ -400,3 +403,4 @@
     </script>
 </body>
 </html>
+
