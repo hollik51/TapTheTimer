@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot List</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            text-align: center;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 10px;
+        }
+        nav button {
+            background: none;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .active {
+            font-weight: bold;
+            color: blue;
+        }
+        .filter {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+        }
+        .bot-card {
+            background: white;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 200px;
+            text-align: center;
+        }
+        .bot-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        .open-bot {
+            display: block;
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .open-bot:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="back-button">&#8592; Back</button>
+        <h1>TapTheTimerBot</h1>
+        <p>mini app</p>
+    </header>
+    <nav>
+        <button class="active">Games</button>
+        <button>Apps</button>
+        <button>Add a New Bot</button>
+    </nav>
+    <div class="filter">
+        <span>All</span>
+        <span>Games</span>
+        <span>Popular</span>
+        <span>Not Opened</span>
+        <span>Opened</span>
+        <span>New</span>
+    </div>
+    <main>
+        <div class="bot-card">
+            <img src="hamster.jpg" alt="Hamster Kombat">
+            <h2>Hamster Kombat</h2>
+            <p>@hamster_kombat_bot</p>
+            <div class="tags">
+                <span>Tap</span>
+                <span>Cards</span>
+                <span>Listed</span>
+            </div>
+            <p>Once in 3 hours</p>
+            <a href="https://t.me/hamster_kombat_bot" class="open-bot">Open bot</a>
+        </div>
+        <div class="bot-card">
+            <img src="crypto.jpg" alt="Crypto Bunny Bot">
+            <h2>Crypto Bunny Bot</h2>
+            <p>@cryptobunny_bot</p>
+            <div class="tags">
+                <span>Tap</span>
+                <span>Cards</span>
+                <span>Not listed</span>
+            </div>
+            <p>Once in 3 hours</p>
+            <a href="https://t.me/cryptobunny_bot" class="open-bot">Open bot</a>
+        </div>
+    </main>
+</body>
+</html>
