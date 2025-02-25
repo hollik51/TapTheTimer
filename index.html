@@ -392,10 +392,15 @@
             const tabs = document.querySelectorAll('.nav-tabs .tab');
             tabs.forEach(tab => {
                 tab.classList.remove('active');
-                // Изменяем условие для корректной работы с "ADD A NEW BOT"
-                const tabText = tab.textContent.toLowerCase().replace(/\s+/g, '');
-                const sectionText = sectionId.replace('Section', '').toLowerCase().replace(/\s+/g, '');
-                if (tabText.includes(sectionText)) {
+                
+                // Сопоставляем ID секций с текстом кнопок
+                const mapping = {
+                    'gamesSection': 'GAMES',
+                    'appsSection': 'APPS',
+                    'addNewBotSection': 'ADD A NEW BOT'
+                };
+                
+                if (tab.textContent === mapping[sectionId]) {
                     tab.classList.add('active');
                 }
             });
