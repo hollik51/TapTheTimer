@@ -1,168 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bot List</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>TapTheTimerBot</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f4f8;
-            text-align: center;
+            background-color: #f5f5f5;
         }
-        header {
+
+        .header {
+            padding: 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            background: white;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            justify-content: space-between;
+            background-color: white;
         }
-        nav {
+
+        .back-button {
+            font-size: 24px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .title {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .title h1 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .title p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .menu-button {
+            font-size: 24px;
+            color: black;
+        }
+
+        .nav-tabs {
             display: flex;
-            justify-content: center;
+            justify-content: space-around;
+            padding: 15px;
+            background-color: #f8f9fa;
+            margin-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: black;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background-color: #000;
+            color: white;
+        }
+
+        .sub-tabs {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px;
+            gap: 20px;
+        }
+
+        .sub-tab {
+            white-space: nowrap;
+            color: #666;
+            text-decoration: none;
+            padding-bottom: 5px;
+        }
+
+        .sub-tab.active {
+            color: #0088cc;
+            border-bottom: 2px solid #0088cc;
+        }
+
+        .bot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .bot-card {
             background: white;
-            padding: 10px;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
         }
-        nav button {
-            background: none;
-            border: none;
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
+
+        .settings-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #0088cc;
         }
-        .active {
-            font-weight: bold;
-            color: blue;
+
+        .bot-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
         }
-        .filter {
+
+        .bot-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .bot-username {
+            color: #0088cc;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .bot-tags {
             display: flex;
             justify-content: center;
             gap: 10px;
-            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #666;
         }
-        .bot-card {
-            background: white;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            width: 200px;
-            text-align: center;
+
+        .bot-timer {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 15px;
         }
-        .bot-card img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-        }
+
         .open-bot {
-            display: block;
-            background: #007bff;
-            color: white;
+            background: #e8f4f9;
+            color: #0088cc;
             padding: 10px;
-            margin-top: 10px;
+            border-radius: 25px;
             text-decoration: none;
-            border-radius: 5px;
+            display: block;
+            font-weight: 500;
         }
-        .open-bot:hover {
-            background: #0056b3;
+
+        .hidden {
+            display: none;
+        }
+
+        #gamesSection, #appsSection, #addNewBotSection {
+            display: none;
+        }
+
+        #gamesSection.active, #appsSection.active, #addNewBotSection.active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <header>
-        <button class="back-button">&#8592; Back</button>
-        <h1>TapTheTimerBot</h1>
-        <p>mini app</p>
-    </header>
-    <nav>
-        <button class="active">Games</button>
-        <button>Apps</button>
-        <button>Add a New Bot</button>
-    </nav>
-    <div class="filter">
-        <span>All</span>
-        <span>Games</span>
-        <span>Popular</span>
-        <span>Not Opened</span>
-        <span>Opened</span>
-        <span>New</span>
+    <div class="header">
+        <a href="#" class="back-button">←</a>
+        <div class="title">
+            <h1>TapTheTimerBot</h1>
+            <p>mini app</p>
+        </div>
+        <div class="menu-button">⋯</div>
     </div>
-    <main>
-        <div class="bot-card">
-            <img src="hamster.jpg" alt="Hamster Kombat">
-            <h2>Hamster Kombat</h2>
-            <p>@hamster_kombat_bot</p>
-            <div class="tags">
-                <span>Tap</span>
-                <span>Cards</span>
-                <span>Listed</span>
-            </div>
-            <p>Once in 3 hours</p>
-            <a href="https://t.me/hamster_kombat_bot" class="open-bot">Open bot</a>
+
+    <div class="nav-tabs">
+        <a href="#" class="tab active" onclick="showSection('gamesSection')">GAMES</a>
+        <a href="#" class="tab" onclick="showSection('appsSection')">APPS</a>
+        <a href="#" class="tab" onclick="showSection('addNewBotSection')">ADD A NEW BOT</a>
+    </div>
+
+    <div id="gamesSection" class="active">
+        <div class="sub-tabs">
+            <a href="#" class="sub-tab active">ALL GAMES</a>
+            <a href="#" class="sub-tab">POPULAR</a>
+            <a href="#" class="sub-tab">NOT OPENED</a>
+            <a href="#" class="sub-tab">OPENED</a>
+            <a href="#" class="sub-tab">NEW</a>
         </div>
-        <div class="bot-card">
-            <img src="crypto.jpg" alt="Crypto Bunny Bot">
-            <h2>Crypto Bunny Bot</h2>
-            <p>@cryptobunny_bot</p>
-            <div class="tags">
-                <span>Tap</span>
-                <span>Cards</span>
-                <span>Not listed</span>
+
+        <div class="bot-grid">
+            <div class="bot-card">
+                <div class="settings-icon">⚙️</div>
+                <img src="img/hamster.jpg" alt="Hamster Kombat" class="bot-image">
+                <div class="bot-name">Hamster Kombat</div>
+                <div class="bot-username">@hamster_kombat_bot</div>
+                <div class="bot-tags">
+                    <span>Tap</span>
+                    <span>Cards</span>
+                    <span>Listed</span>
+                </div>
+                <div class="bot-timer">Once in 3 hours</div>
+                <a href="https://t.me/hamster_kombat_bot" class="open-bot">Open bot</a>
             </div>
-            <p>Once in 3 hours</p>
-            <a href="https://t.me/cryptobunny_bot" class="open-bot">Open bot</a>
-        </div>
-        <div class="bot-card">
-            <img src="cityholder.jpg" alt="CITY Holder Game">
-            <h2>CITY Holder Game</h2>
-            <p>@cityholder</p>
-            <div class="tags">
-                <span>Tap</span>
-                <span>Cards</span>
-                <span>Not listed</span>
+
+            <div class="bot-card">
+                <div class="settings-icon">⚙️</div>
+                <img src="img/crypto.jpg" alt="Crypto Bunny Bot" class="bot-image">
+                <div class="bot-name">Crypto Bunny Bot</div>
+                <div class="bot-username">@cryptobunny_bot</div>
+                <div class="bot-tags">
+                    <span>Tap</span>
+                    <span>Cards</span>
+                    <span>Not listed</span>
+                </div>
+                <div class="bot-timer">Once in 3 hours</div>
+                <a href="https://t.me/cryptobunny_bot" class="open-bot">Open bot</a>
             </div>
-            <p>Once in 4 hours</p>
-            <a href="https://t.me/cityholder" class="open-bot">Open bot</a>
-        </div>
-        <div class="bot-card">
-            <img src="dropee.jpg" alt="Dropee">
-            <h2>Dropee</h2>
-            <p>@DropeeBot</p>
-            <div class="tags">
-                <span>Tap</span>
-                <span>Cards</span>
-                <span>Not listed</span>
+
+            <div class="bot-card">
+                <div class="settings-icon">⚙️</div>
+                <img src="img/cityholder.jpg" alt="CITY Holder Game" class="bot-image">
+                <div class="bot-name">CITY Holder Game 🏠</div>
+                <div class="bot-username">@cityholder</div>
+                <div class="bot-tags">
+                    <span>Tap</span>
+                    <span>Cards</span>
+                    <span>Not listed</span>
+                </div>
+                <div class="bot-timer">Once in 4 hours</div>
+                <a href="https://t.me/cityholder" class="open-bot">Open bot</a>
             </div>
-            <p>Once in 3 hours</p>
-            <a href="https://t.me/DropeeBot" class="open-bot">Open bot</a>
-        </div>
-        <div class="bot-card">
-            <img src="notpixel.jpg" alt="Not Pixel">
-            <h2>Not Pixel</h2>
-            <p>@notpixel</p>
-            <div class="tags">
-                <span>Art</span>
-                <span>Pixels</span>
-                <span>Not listed</span>
+
+            <div class="bot-card">
+                <div class="settings-icon">⚙️</div>
+                <img src="img/dropee.jpg" alt="Dropee" class="bot-image">
+                <div class="bot-name">Dropee</div>
+                <div class="bot-username">@DropeeBot</div>
+                <div class="bot-tags">
+                    <span>Tap</span>
+                    <span>Cards</span>
+                    <span>Not listed</span>
+                </div>
+                <div class="bot-timer">Once in 3 hours</div>
+                <a href="https://t.me/DropeeBot" class="open-bot">Open bot</a>
             </div>
-            <p>Once in 8 hours</p>
-            <a href="https://t.me/notpixel" class="open-bot">Open bot</a>
-        </div>
-        <div class="bot-card">
-            <img src="bullrun.jpg" alt="Bull Run - Mine Bul">
-            <h2>Bull Run - Mine Bul</h2>
-            <p>@BullApp_bot</p>
-            <div class="tags">
-                <span>Tap</span>
-                <span>Cards</span>
-                <span>Not listed</span>
+
+            <div class="bot-card">
+                <div class="settings-icon">⚙️</div>
+                <img src="img/notpixel.jpg" alt="Not Pixel" class="bot-image">
+                <div class="bot-name">Not Pixel</div>
+                <div class="bot-username">@notpixel</div>
+                <div class="bot-tags">
+                    <span>Art</span>
+                    <span>Pixels</span>
+                    <span>Not listed</span>
+                </div>
+                <div class="bot-timer">Once in 8 hours</div>
+                <a href="https://t.me/notpixel" class="open-bot">Open bot</a>
             </div>
-            <p>Once in 3 hours</p>
-            <a href="https://t.me/BullApp_bot" class="open-bot">Open bot</a>
+
+            <div class="bot-card">
+                <div class="settings-icon">⚙️</div>
+                <img src="img/bullapp.jpg" alt="Bull Run - Mine Bul" class="bot-image">
+                <div class="bot-name">Bull Run - Mine Bul</div>
+                <div class="bot-username">@BullApp_bot</div>
+                <div class="bot-tags">
+                    <span>Tap</span>
+                    <span>Cards</span>
+                    <span>Not listed</span>
+                </div>
+                <div class="bot-timer">Once in 3 hours</div>
+                <a href="https://t.me/BullApp_bot" class="open-bot">Open bot</a>
+            </div>
         </div>
-    </main>
+    </div>
+
+    <div id="appsSection" class="hidden">
+        <h2>Apps Section</h2>
+        <!-- Содержимое для вкладки Apps -->
+    </div>
+
+    <div id="addNewBotSection" class="hidden">
+        <h2>Available Bots to Add</h2>
+        <!-- Здесь будет список доступных ботов для добавления -->
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Скрываем все секции
+            document.getElementById('gamesSection').classList.remove('active');
+            document.getElementById('appsSection').classList.remove('active');
+            document.getElementById('addNewBotSection').classList.remove('active');
+            
+            // Показываем выбранную секцию
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Обновляем активную вкладку
+            const tabs = document.querySelectorAll('.nav-tabs .tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase().includes(sectionId.replace('Section', '').toLowerCase())) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
+
