@@ -15,6 +15,7 @@
 
         body {
             background-color: #f5f5f5;
+            min-height: 100vh;
         }
 
         .header {
@@ -26,9 +27,20 @@
         }
 
         .back-button {
-            font-size: 24px;
+            display: flex;
+            align-items: center;
             text-decoration: none;
             color: black;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .back-button .arrow {
+            font-size: 24px;
+            transform: rotate(180deg);
+            line-height: 1;
+            display: flex;
+            align-items: center;
         }
 
         .title {
@@ -123,7 +135,7 @@
         }
 
         .bot-card {
-            background: white;
+            background: linear-gradient(135deg, #f0f2f5, #ffffff);
             border-radius: 15px;
             padding: 12px;
             text-align: center;
@@ -133,6 +145,28 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .bot-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+                rgba(240, 244, 248, 0.95) 0%,
+                rgba(255, 255, 255, 0.6) 100%
+            );
+            border-radius: 15px;
+            z-index: 0;
+        }
+
+        .bot-card > * {
+            position: relative;
+            z-index: 1;
         }
 
         .settings-icon {
@@ -195,10 +229,16 @@
         }
 
         .bot-tags span {
+            background: white;
+            padding: 4px 8px;
+            border-radius: 12px;
             color: #666;
         }
 
         .bot-timer {
+            background: white;
+            padding: 4px 8px;
+            border-radius: 12px;
             color: #666;
             font-size: 10px;
             margin-bottom: 8px;
@@ -261,7 +301,9 @@
 </head>
 <body>
     <div class="header">
-        <a href="#" class="back-button">←</a>
+        <a href="#" class="back-button" onclick="goBack(); return false;">
+            <span class="arrow">→</span>
+        </a>
         <div class="title">
             <h1>TapTheTimerBot</h1>
             <p>mini app</p>
@@ -304,7 +346,7 @@
     </div>
 
     <script>
-        // Данные ботов
+        // Обновляем данные ботов с точным временем в минутах
         const botsData = [
             {
                 id: 'hamster',
@@ -313,6 +355,7 @@
                 username: '@hamster_kombat_bot',
                 tags: ['Tap', 'Cards', 'Listed'],
                 timer: 'Once in 3 hours',
+                waitTimeMinutes: 1, // 3 часа
                 telegramLink: 'https://t.me/hamster_kombat_bot'
             },
             {
@@ -322,6 +365,7 @@
                 username: '@cryptobunny_bot',
                 tags: ['Tap', 'Cards', 'Not listed'],
                 timer: 'Once in 3 hours',
+                waitTimeMinutes: 180, // 3 часа
                 telegramLink: 'https://t.me/cryptobunny_bot'
             },
             {
@@ -331,6 +375,7 @@
                 username: '@cityholder',
                 tags: ['Tap', 'Cards', 'Not listed'],
                 timer: 'Once in 4 hours',
+                waitTimeMinutes: 240, // 4 часа
                 telegramLink: 'https://t.me/cityholder'
             },
             {
@@ -340,6 +385,7 @@
                 username: '@DropeeBot',
                 tags: ['Tap', 'Cards', 'Not listed'],
                 timer: 'Once in 3 hours',
+                waitTimeMinutes: 180, // 3 часа
                 telegramLink: 'https://t.me/DropeeBot'
             },
             {
@@ -349,6 +395,7 @@
                 username: '@notpixel',
                 tags: ['Art', 'Pixels', 'Not listed'],
                 timer: 'Once in 8 hours',
+                waitTimeMinutes: 480, // 8 часов
                 telegramLink: 'https://t.me/notpixel'
             },
             {
@@ -358,6 +405,7 @@
                 username: '@BullApp_bot',
                 tags: ['Tap', 'Cards', 'Not listed'],
                 timer: 'Once in 3 hours',
+                waitTimeMinutes: 180, // 3 часа
                 telegramLink: 'https://t.me/BullApp_bot'
             }
         ];
@@ -365,7 +413,73 @@
         // Сохраняем выбранные боты в localStorage
         let selectedBots = JSON.parse(localStorage.getItem('selectedBots')) || [];
 
+        // Функция для форматирования оставшегося времени
+        function formatTimeLeft(milliseconds) {
+            const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+            const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            }
+            return `${minutes}m`;
+        }
+
+        // Функция для отправки уведомления в бот
+        async function notifyBot(botId) {
+            const bot = botsData.find(b => b.id === botId);
+            try {
+                const response = await fetch('https://your-backend-url/notify-timer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: window.Telegram.WebApp.initDataUnsafe.user.id,
+                        bot_name: bot.name,
+                        username: bot.username
+                    })
+                });
+            } catch (error) {
+                console.error('Error notifying bot:', error);
+            }
+        }
+
+        // Обновляем функцию обновления таймера
+        function updateBotTimer(botId) {
+            const lastOpenTime = localStorage.getItem(`lastOpen_${botId}`);
+            if (!lastOpenTime) return;
+
+            const bot = botsData.find(b => b.id === botId);
+            const waitTime = bot.waitTimeMinutes * 60 * 1000;
+
+            const now = Date.now();
+            const timePassed = now - parseInt(lastOpenTime);
+            const timeLeft = waitTime - timePassed;
+
+            const timerElement = document.querySelector(`[data-bot-id="${botId}"] .bot-timer`);
+            if (timerElement) {
+                if (timeLeft > 0) {
+                    timerElement.textContent = `Next in: ${formatTimeLeft(timeLeft)}`;
+                    setTimeout(() => updateBotTimer(botId), 60000);
+                } else {
+                    timerElement.textContent = bot.timer;
+                    notifyBot(botId); // Отправляем уведомление когда таймер истек
+                }
+            }
+        }
+
+        // Обновляем функцию создания карточки
         function createBotCard(bot, isInGames) {
+            const lastOpenTime = localStorage.getItem(`lastOpen_${bot.id}`);
+            const waitTime = bot.waitTimeMinutes * 60 * 1000;
+            
+            let timerText = bot.timer;
+            if (lastOpenTime) {
+                const timeLeft = waitTime - (Date.now() - parseInt(lastOpenTime));
+                if (timeLeft > 0) {
+                    timerText = `Next in: ${formatTimeLeft(timeLeft)}`;
+                }
+            }
+
             return `
                 <div class="bot-card" data-bot-id="${bot.id}">
                     ${isInGames ? `
@@ -380,9 +494,9 @@
                     <div class="bot-tags">
                         ${bot.tags.map(tag => `<span>${tag}</span>`).join('')}
                     </div>
-                    <div class="bot-timer">${bot.timer}</div>
+                    <div class="bot-timer">${timerText}</div>
                     ${isInGames ? 
-                        `<a href="https://t.me/${bot.username.replace('@', '')}" class="open-bot">Open bot</a>` :
+                        `<a href="https://t.me/${bot.username.replace('@', '')}" class="open-bot" onclick="startTimer('${bot.id}', event)">Open bot</a>` :
                         `<a href="#" class="open-bot" onclick="addBot('${bot.id}', event)">Add bot</a>`
                     }
                 </div>
@@ -437,12 +551,35 @@
             availableBotsGrid.innerHTML = availableBots.map(bot => createBotCard(bot, false)).join('');
         }
 
+        // Функция запуска таймера при открытии бота
+        function startTimer(botId, event) {
+            localStorage.setItem(`lastOpen_${botId}`, Date.now().toString());
+            updateBotTimer(botId);
+        }
+
+        // Обновляем все таймеры при загрузке страницы
+        function updateAllTimers() {
+            botsData.forEach(bot => {
+                if (selectedBots.includes(bot.id)) {
+                    updateBotTimer(bot.id);
+                }
+            });
+        }
+
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', () => {
             updateBotGrids();
+            updateAllTimers();
         });
 
+        // Добавляем историю навигации
+        let navigationHistory = ['gamesSection'];
+
         function showSection(sectionId) {
+            // Сохраняем текущую секцию в историю перед переключением
+            const currentSection = document.querySelector('.nav-tabs .tab.active').textContent;
+            navigationHistory.push(sectionId);
+
             // Скрываем все секции
             document.getElementById('gamesSection').classList.remove('active');
             document.getElementById('appsSection').classList.remove('active');
@@ -455,18 +592,20 @@
             const tabs = document.querySelectorAll('.nav-tabs .tab');
             tabs.forEach(tab => {
                 tab.classList.remove('active');
-                
-                // Сопоставляем ID секций с текстом кнопок
                 const mapping = {
                     'gamesSection': 'GAMES',
                     'appsSection': 'APPS',
                     'addNewBotSection': 'ADD A NEW BOT'
                 };
-                
                 if (tab.textContent === mapping[sectionId]) {
                     tab.classList.add('active');
                 }
             });
+        }
+
+        // Функция для кнопки "назад"
+        function goBack() {
+            showSection('gamesSection');
         }
     </script>
 </body>
