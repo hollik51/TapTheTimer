@@ -137,7 +137,7 @@
         .bot-card {
             background: linear-gradient(135deg, #f0f2f5, #ffffff);
             border-radius: 15px;
-            padding: 12px;
+            padding: 15px;
             text-align: center;
             position: relative;
             height: 240px;
@@ -191,69 +191,71 @@
         }
 
         .bot-image {
-            width: 65px;
-            height: 65px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            margin-bottom: 6px;
             object-fit: cover;
         }
 
         .bot-name {
             font-weight: 600;
-            margin-bottom: 3px;
-            font-size: 13px;
+            margin: 8px 0;
+            font-size: 14px;
             line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 32px;
+            width: 100%;
+            text-align: center;
         }
 
         .bot-username {
             color: #0088cc;
-            margin-bottom: 6px;
-            font-size: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
             text-decoration: none;
+            width: 100%;
+            text-align: center;
         }
 
         .bot-tags {
             display: flex;
             justify-content: center;
-            gap: 5px;
-            margin-bottom: 6px;
-            font-size: 10px;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
             color: #666;
             flex-wrap: wrap;
-            padding: 0 3px;
+            width: 100%;
         }
 
         .bot-tags span {
             background: white;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 12px;
             color: #666;
         }
 
         .bot-timer {
             background: white;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 12px;
             color: #666;
-            font-size: 10px;
-            margin-bottom: 8px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            width: auto;
+            text-align: center;
         }
 
         .open-bot {
             background: #e8f4f9;
             color: #0088cc;
-            padding: 7px;
+            padding: 8px;
             border-radius: 25px;
             text-decoration: none;
             display: block;
             font-weight: 500;
             width: 100%;
-            font-size: 12px;
+            font-size: 13px;
+            text-align: center;
+            margin-top: auto;
         }
 
         .hidden {
@@ -355,7 +357,7 @@
                 username: '@hamster_kombat_bot',
                 tags: ['Tap', 'Cards', 'Listed'],
                 timer: 'Once in 3 hours',
-                waitTimeMinutes: 1, // 3 часа
+                waitTimeMinutes: 2, // 3 часа
                 telegramLink: 'https://t.me/hamster_kombat_bot'
             },
             {
@@ -427,7 +429,7 @@
         async function notifyBot(botId) {
             const bot = botsData.find(b => b.id === botId);
             try {
-                const response = await fetch('https://your-backend-url/notify-timer', {
+                const response = await fetch('http://localhost:8080/notify-timer', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -438,6 +440,9 @@
                         username: bot.username
                     })
                 });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
             } catch (error) {
                 console.error('Error notifying bot:', error);
             }
