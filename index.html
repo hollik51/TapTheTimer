@@ -347,7 +347,19 @@
         </div>
     </div>
 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <script>
+        // Инициализация Telegram WebApp
+        window.Telegram.WebApp.ready();
+        
+        // Проверяем доступность данных пользователя
+        console.log('User Data:', window.Telegram.WebApp.initDataUnsafe.user);
+
+        if (!window.Telegram.WebApp.platform) {
+            console.error('Страница должна быть открыта через Telegram WebApp');
+        }
+
         // Обновляем данные ботов с точным временем в минутах
         const botsData = [
             {
@@ -357,7 +369,7 @@
                 username: '@hamster_kombat_bot',
                 tags: ['Tap', 'Cards', 'Listed'],
                 timer: 'Once in 3 hours',
-                waitTimeMinutes: 1.5, // 3 часа
+                waitTimeMinutes: 1, // 3 часа
                 telegramLink: 'https://t.me/hamster_kombat_bot'
             },
             {
@@ -429,9 +441,15 @@
         async function sendNotification(botId) {
             const bot = botsData.find(b => b.id === botId);
             try {
-                // Получаем chat_id из Telegram WebApp
+                // Проверяем доступность Telegram WebApp
+                if (!window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+                    console.error('Не удалось получить chat_id пользователя');
+                    return;
+                }
+
                 const chatId = window.Telegram.WebApp.initDataUnsafe.user.id;
-                
+                console.log('Отправка уведомления для chat_id:', chatId); // Для отладки
+
                 // Отправляем уведомление через Telegram Bot API
                 const response = await fetch(`https://api.telegram.org/bot8002709972:AAFEv0sGBalQHq8FMOWbV1A-tVcFoOEH2ws/sendMessage`, {
                     method: 'POST',
@@ -444,8 +462,11 @@
                     })
                 });
 
+                const responseData = await response.json(); // Получаем ответ от API
+                console.log('Ответ от Telegram API:', responseData); // Для отладки
+
                 if (!response.ok) {
-                    throw new Error('Ошибка отправки уведомления');
+                    throw new Error(`Ошибка отправки уведомления: ${responseData.description}`);
                 }
             } catch (error) {
                 console.error('Ошибка при отправке уведомления:', error);
@@ -573,8 +594,16 @@
 
         // Функция запуска таймера при открытии бота
         function startTimer(botId, event) {
-            localStorage.setItem(`lastOpen_${botId}`, Date.now().toString());
-            updateBotTimer(botId);
+            try {
+                if (!window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+                    console.error('WebApp не инициализирован');
+                    return;
+                }
+                localStorage.setItem(`lastOpen_${botId}`, Date.now().toString());
+                updateBotTimer(botId);
+            } catch (error) {
+                console.error('Ошибка при запуске таймера:', error);
+            }
         }
 
         // Обновляем все таймеры при загрузке страницы
