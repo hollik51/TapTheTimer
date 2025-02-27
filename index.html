@@ -425,26 +425,41 @@
             return `${minutes}m`;
         }
 
-        // Функция для отправки уведомления в бот
-        async function notifyBot(botId) {
+        // Функция для отправки уведомления пользователю
+        async function sendNotification(botId) {
             const bot = botsData.find(b => b.id === botId);
             try {
-                const response = await fetch('http://localhost:8080/notify-timer', {
+                // Получаем chat_id из Telegram WebApp
+                const chatId = window.Telegram.WebApp.initDataUnsafe.user.id;
+                
+                // Отправляем уведомление через Telegram Bot API
+                const response = await fetch(`https://api.telegram.org/bot8002709972:AAFEv0sGBalQHq8FMOWbV1A-tVcFoOEH2ws/sendMessage`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        chat_id: window.Telegram.WebApp.initDataUnsafe.user.id,
-                        bot_name: bot.name,
-                        username: bot.username
+                        chat_id: chatId,
+                        text: `⏰ Время пришло!\n\n🎮 Таймер для ${bot.name} завершен.\n🔥 Можно снова начать игру!`
                     })
                 });
+
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Ошибка отправки уведомления');
                 }
             } catch (error) {
-                console.error('Error notifying bot:', error);
+                console.error('Ошибка при отправке уведомления:', error);
+            }
+        }
+
+        // Функция обработки окончания таймера
+        function handleTimerEnd(botId) {
+            const timerElement = document.querySelector(`[data-bot-id="${botId}"] .bot-timer`);
+            if (timerElement) {
+                // Обновляем текст таймера
+                timerElement.textContent = botsData.find(b => b.id === botId).timer;
+                // Отправляем уведомление
+                sendNotification(botId);
             }
         }
 
@@ -464,10 +479,10 @@
             if (timerElement) {
                 if (timeLeft > 0) {
                     timerElement.textContent = `Next in: ${formatTimeLeft(timeLeft)}`;
-                    setTimeout(() => updateBotTimer(botId), 60000);
+                    // Устанавливаем точный таймер на окончание времени
+                    setTimeout(() => handleTimerEnd(botId), timeLeft);
                 } else {
-                    timerElement.textContent = bot.timer;
-                    notifyBot(botId); // Отправляем уведомление когда таймер истек
+                    handleTimerEnd(botId);
                 }
             }
         }
